@@ -18,6 +18,12 @@ The conversion performs three tasks:
 2. **EXIF normalization** — Apple's HEIC EXIF GPS data does not fully conform to the EXIF specification (the GPS IFD omits `GPSVersionID` and stores `GPSProcessingMethod` with an incorrect type). Some downstream parsers, including Google's photo ingestion, reject the entire GPS IFD when these anomalies are present. The script extracts the coordinate values directly and rebuilds a conformant EXIF block rather than copying the original bytes.
 3. **Image sizing** — two versions of each photo are generated: a display-size JPEG for the placemark balloon, and a small thumbnail used as the map icon. This keeps the map responsive while still providing a detailed view on selection.
 
+## Use with open-source GIS (GeoLibre and similar)
+
+The EXIF normalization step is useful beyond Google Earth. Apple's HEIC GPS anomaly affects any downstream parser that requires a conformant GPS IFD — this includes open-source GIS applications such as GeoLibre, whose geotagged-photo import relies on a browser EXIF parser and cannot read the GPS position from an unmodified iPhone HEIC. The script can therefore serve as a preprocessing step: convert a folder of HEIC photos to standards-compliant JPEGs, then import those into GeoLibre (Add Data → Geotagged Photos) or any other GIS that accepts JPEG. This fixes missing or malformed geographic metadata before the photos reach the GIS.
+
+To use only the preprocessing step, run the script with the photos folder and an output path, then discard the KMZ if it is not needed — or import the generated JPEGs directly.
+
 ## Requirements
 
 - Python 3.8+
@@ -85,6 +91,12 @@ MIT — see [LICENSE](LICENSE).
 1. **格式转换** — HEIC 图像被解码并重新编码为 JPEG。Google Earth Pro 无法直接显示 HEIC 文件。
 2. **EXIF 规范化** — 苹果 HEIC 中的 GPS EXIF 数据不完全符合 EXIF 规范（GPS IFD 缺少 `GPSVersionID`，`GPSProcessingMethod` 的类型不正确）。部分下游解析器（包括 Google 的照片摄入流程）在检测到这些异常时会拒绝读取整个 GPS IFD。脚本直接提取坐标值并重建符合规范的 EXIF 块，而非拷贝原始字节。
 3. **图片尺寸分级** — 每张照片生成两个版本：用于标记弹窗的显示尺寸 JPEG，以及用作地图图标的缩略图。这样既保证地图流畅，又能在选中时查看细节。
+
+## 用于开源 GIS（GeoLibre 等）
+
+EXIF 规范化步骤的价值不仅限于 Google Earth。苹果 HEIC 的 GPS 异常会影响任何要求符合规范的 GPS IFD 的下游解析器——包括 GeoLibre 等开源 GIS：其带地理标记照片的导入依赖浏览器端的 EXIF 解析器，无法从未经处理的 iPhone HEIC 中读取 GPS 位置。因此本脚本可作为预处理步骤：将 HEIC 照片转换为符合标准的 JPEG，再导入 GeoLibre（Add Data → Geotagged Photos）或任何其他接受 JPEG 的 GIS。地理信息在进入 GIS 之前即已修复。
+
+如果只需要预处理步骤，运行脚本指定照片文件夹和输出路径即可，生成的 JPEG 可直接导入，无需使用 KMZ。
 
 ## 环境要求
 

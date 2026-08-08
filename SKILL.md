@@ -11,6 +11,7 @@ Converts a folder of iPhone HEIC photos (the default format for site-visit photo
 
 - User provides iPhone photos (.HEIC) from a site visit / field trip and wants them placed on a map
 - Any request to "put these photos on Google Earth / My Maps / a map" where source files are HEIC
+- Photos need to be imported into an open-source GIS (e.g. GeoLibre Geotagged Photos) that cannot read GPS from unmodified iPhone HEIC — the EXIF rebuild doubles as a preprocessing step
 - Recurring site-visit workflow: photos land in a folder, deliverable is a KMZ
 
 ## Critical background (why this pipeline exists)
