@@ -5,7 +5,7 @@ description: Use when iPhone HEIC photos must become a geolocated KMZ.
 
 # HEIC Site-Visit Photos → Geolocated KMZ
 
-Turn a folder of iPhone HEIC photos (the default format for the user's site-visit shots) into a single self-contained KMZ that opens in Google Earth Pro with geotagged placemarks, photo thumbnails as map icons, and 800px images in balloons.
+Converts a folder of iPhone HEIC photos (the default format for site-visit photographs) into a single self-contained KMZ that opens in Google Earth Pro with geotagged placemarks, photo thumbnails as map icons, and display-size images in balloons.
 
 ## When to use
 
@@ -15,14 +15,14 @@ Turn a folder of iPhone HEIC photos (the default format for the user's site-visi
 
 ## Critical background (why this pipeline exists)
 
-1. **Apple HEIC GPS EXIF is non-standard**: the GPS IFD lacks `GPSVersionID` and has garbage `GPSProcessingMethod` bytes. Copying HEIC EXIF straight into JPEG breaks geolocation in Google Photos / My Maps (silent failure). Must REBUILD the EXIF, not copy it.
-2. **Google Earth Pro cannot decode HEIC**: embedding HEIC directly in KMZ shows red-X placeholders (verified experimentally). Photos MUST be converted to JPEG (or PNG/GIF/BMP/TIFF).
+1. **Apple HEIC GPS EXIF is non-standard**: the GPS IFD lacks `GPSVersionID` and has incorrect `GPSProcessingMethod` data. Copying HEIC EXIF straight into JPEG breaks geolocation in Google Photos / My Maps (silent failure). The EXIF must be rebuilt, not copied.
+2. **Google Earth Pro cannot decode HEIC**: embedding HEIC directly in KMZ shows red-X placeholders. Photos must be converted to JPEG (or PNG/GIF/BMP/TIFF).
 3. **Google Earth web rejects KMZ-embedded images** in feature descriptions ("Only external images are currently supported") — the KMZ workflow targets **Google Earth Pro desktop**. Web version needs externally-hosted image URLs instead.
-4. **Dual image sizes** are the standard performance pattern: 128px thumbnails as map icons (21 icons ≈ 90KB), ≤2048px images in balloons (loaded one at a time on click). 2048px also matches the Google Earth web image size limit if ever reused there.
+4. **Dual image sizes** are the standard performance pattern: small thumbnails as map icons keep the map responsive; display-size images are loaded on demand in balloons. 2048px also matches the Google Earth web image size limit if ever reused there.
 
 ## Pipeline (3 steps, all in one script)
 
-Script: `scripts/heic_to_kmz.py` (verified against real 21-photo folder: 21 placemarks, ZIP OK, no missing refs).
+Script: `scripts/heic_to_kmz.py`.
 
 ```bash
 python heic_to_kmz.py <src_dir> <out.kmz> [--max-edge 2048] [--quality 85] [--thumb 128]
@@ -41,7 +41,7 @@ python heic_to_kmz.py <src_dir> <out.kmz> [--max-edge 2048] [--quality 85] [--th
 
 ## Pitfalls
 
-- **Windows case-insensitive globs**: `*.HEIC` + `*.heic` double-match on Windows — dedupe with `set()` or the placemark count doubles (42 instead of 21). Already handled in script.
+- **Windows case-insensitive globs**: `*.HEIC` + `*.heic` double-match on Windows — dedupe with `set()` or the placemark count doubles. Already handled in script.
 - **Coordinate order**: KML wants `longitude,latitude,altitude`, NOT lat,lon. Getting this backwards places pins mirrored across the globe.
 - **Do not copy HEIC EXIF bytes** into JPEG (`img.save(..., exif=heic_exif_bytes)`) — that propagates the broken GPS IFD. Always rebuild via piexif.
 - **No-GPS photos** are skipped and reported; never fabricate coordinates.
