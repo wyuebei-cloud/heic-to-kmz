@@ -1,0 +1,4 @@
+pillow>=9.0
+pillow-heif>=0.10
+exifread>=3.0
+piexif>=1.1

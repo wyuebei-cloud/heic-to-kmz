@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+build/
+dist/
+*.spec
+
+# npx skills artifacts (community-skill-publishing)
+.agents/
+skills-lock.json
+
+# Test / temp
+_kmz_build/
+*_test.kmz
+test_*.kmz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
